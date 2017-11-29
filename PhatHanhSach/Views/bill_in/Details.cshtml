@@ -1,0 +1,59 @@
+﻿@model PhatHanhSach.Models.bill_in
+
+@{
+    ViewBag.Title = "Chi tiết";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Chi tiết phiếu nhập</h2>
+<div class="row">
+    <div class="col col-md-6">
+        <h4>Phiếu Nhập</h4>
+        <table class="table table-hover table-striped">
+            <tr>
+                <td><b>Mã Phiếu</b></td>
+                <td>@Html.DisplayFor(model => model.id)</td>
+            </tr>
+            <tr>
+                <td><b>Nhà xuất bản</b></td>
+                <td>@Html.DisplayFor(model => model.publisher.name)</td>
+            </tr>
+            <tr>
+                <td><b>Ngày nhập</b></td>
+                <td>@Html.DisplayFor(model => model.date)</td>
+            </tr>
+            <tr>
+                <td><b>Người nhập</b></td>
+                <td>@Html.DisplayFor(model => model.rc)</td>
+            </tr>
+            <tr>
+                <td><b>Tổng cộng</b></td>
+                <td>@Html.DisplayFor(model => model.total)</td>
+            </tr>
+        </table>
+    </div>
+    <div class="col col-md-6">
+        <h4>Chi Tiết Phiếu Nhập</h4>
+        <table class="table table-bordered">
+            <tr>
+                <td><b>Tên sách</b></td>
+                <td><b>Đơn giá nhập</b></td>
+                <td><b>Số lượng</b></td>
+            </tr>
+            <tbody class="detail">
+                @foreach(var item in ViewBag.detail)
+                {
+                   <tr>
+                       <td>@item.book.name</td>
+                       <td>@item.book.price_in</td>
+                       <td>@item.quantity</td>
+                   </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.id }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

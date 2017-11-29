@@ -1,0 +1,46 @@
+﻿@model IEnumerable<PhatHanhSach.Models.agent_payment>
+
+@{
+    ViewBag.Title = "Thanh toán của đại lý";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Thanh toán của đại lý</h2>
+
+<p>
+    @Html.ActionLink("Thêm thanh toán mới", "Create",null,new { @class="btn btn-primary"})
+</p>
+<table class="table">
+    <tr>
+
+        <th>
+            Tên đại lý
+        </th>
+        <th>
+            Ngày thanh toán
+        </th>
+        <th>
+            Số tiền
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.agent.name)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.date)
+        </td>
+
+        <td>
+            @Html.DisplayFor(modelItem => item.amount)
+        </td>
+        <td>
+            @Html.ActionLink("Chi tiết thanh toán", "Details", new { id = item.id }, new {@class="btn btn-sm btn-info" })
+        </td>
+    </tr>
+}
+
+</table>

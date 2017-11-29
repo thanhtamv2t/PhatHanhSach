@@ -1,0 +1,77 @@
+﻿@model PhatHanhSach.Models.agent
+
+@{
+    ViewBag.Title = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Details</h2>
+
+<div>
+    <hr />
+</div>
+<div class="row">
+    <div class="col col-md-6">
+        <table class="table table-hover">
+            <tr>
+                <td><b>TÊN ĐẠI LÝ</b></td>
+                <td>@Html.DisplayFor(model => model.name)</td>
+            </tr>
+            <tr>
+                <td><b>ĐỊA CHỈ</b></td>
+                <td>@Html.DisplayFor(model => model.addr)</td>
+            </tr>
+            <tr>
+                <td><b>SỐ ĐIỆN THOẠI</b></td>
+                <td>@Html.DisplayFor(model => model.phone)</td>
+            </tr>
+        </table>
+    </div>
+    <div class="col col-md-6">
+        <form action="/" method="post" id="search">
+            <div class="col col-md-6">
+                <input type="hidden" name="agent_id" value="@ViewBag.aid" />
+                <input class="form-control text-box single-line" data-val="true" data-val-date="The field date must be a date." data-val-required="The date field is required." id="date" name="date" type="date" value="" required />
+            </div>
+            <div class="col col-md-2">
+                <button type="submit" class="btn btn-sm btn-info"> <span class="glyphicon glyphicon-search"></span> Tra cứu</button>
+            </div>
+        </form>
+        <hr />
+        <table class="table table-bordered detail">
+            <tr>
+                <td>Số tiền đã thanh toán</td>
+                <td>Số tiền còn nợ</td>
+            </tr>
+            <tr>
+                <td class="text-success paid"><b>@ViewBag.paid</b></td>
+                <td class="text-danger owe"><b>@ViewBag.owe</b></td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.id }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $("#search").submit(function (e) {
+                e.preventDefault();
+                var inp = $(this).serialize();
+                //console.log(inp);
+                $.post("@Url.Action("getDate","agents")", inp, function (e) {
+                    if (e.owe != null)
+                    {
+                        $(".owe").html('<b>'+e.owe+'</b>');
+                        $(".paid").html('<b>' + e.paid + '</b>');
+                        $(".table.detail").after(`<p>Số liệu thống kế đến ngày: <b>`+$("#date").val()+`</b></p>`);
+                    }
+                    
+                });
+            });
+        });
+    </script>
+}

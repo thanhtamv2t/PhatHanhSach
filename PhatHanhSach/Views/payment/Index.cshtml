@@ -1,0 +1,181 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Thống kê</h2>
+
+<div class="row">
+    <div class="col col-md-12">
+            <!-- Nav tabs -->
+            <ul class="nav nav-tabs" role="tablist">
+                <li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">Thống kê kho</a></li>
+                <li role="presentation"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">Thanh toán đại lý</a></li>
+                <li role="presentation"><a href="#messages" aria-controls="messages" role="tab" data-toggle="tab">Doanh thu</a></li>
+            </ul>
+
+            <!-- Tab panes -->
+            <div class="tab-content">
+                <div role="tabpanel" class="tab-pane active" id="home">
+                    <h1></h1>
+                    <!-- Thống kê kho-->
+                    <form class="row date" id="form-storage" style="padding-left:12px;">
+                        <div class="col col-md-2"><h5>Chọn ngày</h5></div>
+                        <div class="col col-md-3"><input class="form-control text-box single-line" data-val="true" data-val-date="The field date must be a date." data-val-required="The date field is required." id="datestorage" name="datestorage" type="date" value="" required />
+                        </div>
+                        <div class="col col-md-6">
+                            <button type="submit" class="btn btn-sm btn-primary"><span class="glyphicon glyphicon-search"></span> Tra cứu</button>
+                        </div>
+                    </form>
+                    <div class="row">
+                        <div class="col col-md-6">
+                            <table class="table table-striped">
+                                <thead>
+                                    <th>Tên sách</th>
+                                    <th>Nhà xuất bản</th>
+                                    <th>Số lượng còn lại</th>
+                                </thead>
+                                <tbody id="storage">
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+
+                </div>
+                <div role="tabpanel" class="tab-pane" id="profile">
+                    <h1></h1>
+                    <form class="row date" id="form-search" style="padding-left:12px;">
+                        <div class="col col-md-3">
+                            Từ <input class="form-control text-box single-line" data-val="true" data-val-date="The field date must be a date." data-val-required="The date field is required." id="datefrom" name="from" type="date" value="" required/>
+                        </div>
+                        <div class="col col-md-3">
+                            Đến <input class="form-control text-box single-line" data-val="true" data-val-date="The field date must be a date." data-val-required="The date field is required." id="dateto" name="to" type="date" value="" required/>
+                        </div>
+                        <div class="col col-md-3">
+                            NXB <select name="pid" class="form-control">
+                                @foreach (var item in ViewBag.list_nxb)
+                                {
+                                    <option value="@item.id">@item.name</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col col-md-3">
+                            <div>&nbsp; <br /></div>
+                            <button type="submit" class="btn btn-sm btn-primary"><span class="glyphicon glyphicon-search"></span> Tra cứu</button>
+                        </div>
+                    </form> 
+                </div>
+                <div role="tabpanel" class="tab-pane" id="messages">
+
+                    <h1></h1>
+                    <form class="row date" id="form-bus" style="padding-left:12px;">
+                        <div class="col col-md-3">
+                            Từ <input class="form-control text-box single-line" data-val="true" data-val-date="The field date must be a date." data-val-required="The date field is required." id="datefromd" name="tfrom" type="date" value="" required/>
+                        </div>
+                        <div class="col col-md-3">
+                            Đến <input class="form-control text-box single-line" data-val="true" data-val-date="The field date must be a date." data-val-required="The date field is required." id="datetod" name="tto" type="date" value="" required/>
+                        </div>
+                        <div class="col col-md-3">
+                            <div>&nbsp; <br /></div>
+                            <button type="submit" class="btn btn-sm btn-primary"><span class="glyphicon glyphicon-search"></span> Tra cứu</button>
+                        </div>
+                    </form> 
+
+                </div>
+            </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Thông báo: </h4>
+            </div>
+            <div class="modal-body">
+                <p class="text-danger text-center message"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Đóng lại</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        //Storage
+        $("#form-storage").submit(function (e) {
+            $this = $(this);
+            e.preventDefault();
+            var d = $("#datestorage").val();
+
+            $.post("@Url.Action("getStorage","payment")", { date: d }, function (a) {
+                var storage = a;
+                if (a == 0) alert("Ngày: " + d + " chưa có dữ liệu được ghi nhận");
+                console.log(a);
+                $.post("@Url.Action("getOut","payment")", { date: d }, function (b) {
+                    var out = b;
+                    console.log(b);
+                    $.each(storage, function (i, iS) {
+                        $.each(out, function (j, iO) {
+                            if (iS.Name == iO.Name)
+                            {
+                                iS.qt = Number(iS.qt) - Number(iO.qt);
+                                var test = iS.qt;
+                            }
+                        });
+                        //console.log(iS);
+                    });
+                    $("#storage").empty();
+                    $.each(storage, function (i, item) {
+                        //console.log(item);
+                        var bid = item.Name;
+                        var qt = item.qt;
+                        //console.log(qt +" &" +bid);
+                        $.post("@Url.Action("getBook","books")", { book_id: bid }, function (db) {
+                            //console.log(db.bookname);
+                            $("#storage").prepend(`
+                                <tr>
+                                    <td>`+db.bookname+`</td><td>`+db.booknxb+`</td><td>`+item.qt+`</td>
+                                </tr>
+
+                            `);
+                        });
+                    });
+
+
+
+                });
+            });
+        });
+
+        //Payment
+        $("#form-search").submit(function (e) {
+            $this = $(this);
+            e.preventDefault();
+            var inp = $this.serialize();
+            $.post("@Url.Action("getPayment","payment")", inp, function (e) {
+                $(".message").html("Số tiền phải trả là: "+e.total);
+                $('#myModal').modal();
+            });
+        });
+
+        //Bus
+        $("#form-bus").submit(function (e) {
+            $this = $(this);
+            e.preventDefault();
+            var inp = $this.serialize();
+            $.post("@Url.Action("getBus","payment")", inp, function (e) {
+                $(".message").html("Doanh Thu (Hóa đơn xuất - hóa đơn nhập) =  "+e.bus);
+                $('#myModal').modal();
+            });
+        });
+    </script>
+}
+

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="93bab4d89a9c4f89b034e8f50b8ddf11" Name="Diagram1">
+        <EntityTypeShape EntityType="PHSModel.agent" Width="1.5" PointX="3" PointY="11.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="PHSModel.agent_payment" Width="1.5" PointX="3" PointY="14.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="PHSModel.agent_payment_detail" Width="1.5" PointX="5.25" PointY="3.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="PHSModel.agent_storage" Width="1.5" PointX="5.25" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="PHSModel.bill_in" Width="1.5" PointX="3" PointY="7.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="PHSModel.bill_in_detail" Width="1.5" PointX="5.25" PointY="7.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="PHSModel.bill_out" Width="1.5" PointX="6" PointY="11.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="PHSModel.bill_out_detail" Width="1.5" PointX="8.25" PointY="3.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="PHSModel.book" Width="1.5" PointX="3" PointY="3" IsExpanded="true" />
+        <EntityTypeShape EntityType="PHSModel.cat" Width="1.5" PointX="0.75" PointY="4" IsExpanded="true" />
+        <EntityTypeShape EntityType="PHSModel.publisher" Width="1.5" PointX="0.75" PointY="7.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="PHSModel.sysdiagram" Width="1.5" PointX="7.75" PointY="7.625" IsExpanded="true" />
+        <AssociationConnector Association="PHSModel.agent_relation" ManuallyRouted="false" />
+        <AssociationConnector Association="PHSModel.agent_relations" ManuallyRouted="false" />
+        <AssociationConnector Association="PHSModel.storeagent" ManuallyRouted="false" />
+        <AssociationConnector Association="PHSModel.payment_detail_payid" ManuallyRouted="false" />
+        <AssociationConnector Association="PHSModel.payment_detail_books" ManuallyRouted="false" />
+        <AssociationConnector Association="PHSModel.storebook" ManuallyRouted="false" />
+        <AssociationConnector Association="PHSModel.bill_in_relation" ManuallyRouted="false" />
+        <AssociationConnector Association="PHSModel.id_publisher" ManuallyRouted="false" />
+        <AssociationConnector Association="PHSModel.bdt_book" ManuallyRouted="false" />
+        <AssociationConnector Association="PHSModel.bill_out_relation" ManuallyRouted="false" />
+        <AssociationConnector Association="PHSModel.book_relation" ManuallyRouted="false" />
+        <AssociationConnector Association="PHSModel.Cat_relation" ManuallyRouted="false" />
+        <AssociationConnector Association="PHSModel.Pub_relation" ManuallyRouted="false" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

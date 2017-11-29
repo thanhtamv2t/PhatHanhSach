@@ -1,0 +1,226 @@
+﻿@model PhatHanhSach.Models.bill_in
+
+@{
+    ViewBag.Title = "Tạo phiếu nhập mới";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Tạo phiếu nhập mới</h2>
+
+
+<div class="row">
+    <div class="col col-md-6">
+@using (Html.BeginForm("Create", "bill_in", FormMethod.Post, new { @class = "form-bill-in" }))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group">
+            @Html.LabelFor(model => model.id_publisher, "Nhà xuất bản", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownList("id_publisher", null, htmlAttributes: new { @class = "form-control",@id="pub" })
+                @Html.ValidationMessageFor(model => model.id_publisher, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.total,"Tổng cộng", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.total, new { htmlAttributes = new { @class = "form-control",@id="totalinp",@readonly="readonly" } })
+                @Html.ValidationMessageFor(model => model.total, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.date,"Ngày", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.date, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.date, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.rc,"Người thu", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.rc, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.rc, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Create" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+}
+    </div>
+    <div class="col col-md-6">
+        <form class="bill-in-detail-form" method="post" action="#">
+            <div class="form-group">
+                <div class="col-md-4">
+                    <select class="form-control" id="books" name="books">
+                        <option>---Chọn NXB ---</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <input type="number" min="0" step="1" name="quant" id="quant" value="" class="form-control" placeholder="Số lượng" required />
+                </div>
+                <div class="col-md-5">
+                    <button class="btn btn-primary btn-sm" type="submit" id="addBook">Thêm</button>
+                    <a class="btn btn-info btn-sm" href="@Url.Action("Create","books")"><span class="glyphicon glyphicon-plus-sign"></span> Sách</a>
+                    <a class="btn btn-warning btn-sm" href="@Url.Action("Create","bill_in")"><span class="glyphicon glyphicon-refresh"></span></a>
+                </div>
+            </div>
+        </form>
+        <hr />
+        <div class="clearfix"></div>
+        <table class="table table-striped" style="margin-top:24px;">
+            <thead>
+                <tr>
+                    <td>Tên sách</td>
+                    <td>Số lượng</td>
+                    <td>Thành giá</td>
+                    <td>Action</td>
+                </tr>
+            </thead>
+            <tbody></tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="2">Tổng cộng</td>
+                    <td colspan="2" id="totalPrice"></td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+
+</div>
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Thông báo: </h4>
+            </div>
+            <div class="modal-body">
+                <p class="text-danger text-center message"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Đóng lại</button>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script>
+        $(document).ready(function () {
+            //Init books
+            var pub_id = $("#pub").val();
+            $("#books").empty();
+            console.log(pub_id);
+            $.post("@Url.Action("getByPub","books")", { pub_id : pub_id }, function (a) {
+                $.each(a, function (i, item) {
+                    $("#books").prepend(`
+                        <option value="`+item.bookid+`">`+item.bookname+`</option>`);
+                });
+            });
+            $("#pub").change(function () {
+                pub_id = $("#pub option:selected").val();
+                $("#books").empty();
+                $.post("@Url.Action("getByPub","books")", { pub_id : pub_id }, function (a) {
+                    $.each(a, function (i, item) {
+                        $("#books").prepend(`
+                            <option value="`+item.bookid+`">`+item.bookname+`</option>`);
+                    });
+                });
+            });
+            //END
+            var total = 0;
+            $("#totalPrice").html(total);
+            $("#totalinp").val(total);
+            $(".bill-in-detail-form").submit(function (e) {
+                e.preventDefault();
+                //console.log($(this).serialize());
+                var a = $("#books").val();
+                //getPrice
+                $.post("@Url.Action("getPriceIn","books")", { id_book: a}, function (data) {
+                    //console.log(data);
+                    var quantity = $("#quant").val();
+                    var money = quantity * data.price;
+                        //Check if exists
+                        var f = 0;
+                        $("tr.item").each(function () {
+                            $this = $(this);
+                            var name = $this.find("td.name").html();
+                            if (name == $("#books option:selected").text()) {
+                                //Check quantity
+                                var newqt = (Number(quantity) + Number($this.find("td.quantity").html()));
+                                var newmoney = newqt * data.price;
+                                $this.find("td.quantity").html(newqt);
+                                $this.find("td.money").html(newmoney);
+                                f = 1;
+
+                            }
+
+                        });
+                        if(f==0){
+                                $(".table tbody").append(`
+                                <tr class="item">
+                                      <td class="id" style="display:none">`+ $("#books option:selected").val()+`</td>
+                                      <td class="name">`+ $("#books option:selected").text() + `</td>
+                                      <td class="quantity">`+ quantity + `</td>
+                                      <td class="money">`+ money + `</td>
+                                      <td><button class="btn-delete btn btn-sm btn-danger">Xóa</button></td>
+
+                                </tr>
+                            `);
+                        }
+                        total = total + data.price * $("#quant").val();
+                        $("#totalPrice").html(total);
+                        $("#totalinp").val(total);
+
+
+                })
+            });
+            $("body").on("click", "button.btn-delete", function () {
+                var money = $(this).parents("tr.item").find("td.money").html();
+                total = total - money;
+                $("#totalPrice").html(total);
+                $("#totalinp").val(total);
+                $(this).parents("tr.item").remove();
+            });
+
+            $("form.form-bill-in").submit(function (e) {
+                e.preventDefault();
+                //Insert Form
+                var inp = $(this).serialize();
+                $.post("@Url.Action("Create","bill_in")", inp, function (c) {
+                    console.log(c);
+                                $("tr.item").each(function () {
+                                    $this = $(this);
+                                    var book_id = $this.find("td.id").html();
+                                    var name = $this.find("td.name").html();
+                                    var qt = $this.find("td.quantity").html();
+                                    var datastring = "id_bill_in=" + c.inserted + "&id_book=" + book_id +"&quantity="+qt;
+                                    console.log(datastring);
+                                    //Detail
+                                    $.post("@Url.Action("Create","bill_in_detail")", datastring, function (b) {
+                                        console.log(b);
+                                        window.location.href = "@Url.Action("Index","bill_in")";
+                                    });
+                                });
+                });
+
+            });
+
+        });
+    </script>
+}

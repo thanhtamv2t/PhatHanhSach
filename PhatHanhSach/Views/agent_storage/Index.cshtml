@@ -1,0 +1,88 @@
+﻿@model IEnumerable<PhatHanhSach.Models.agent_storage>
+
+@{
+    ViewBag.Title = "Kho - [Xử lý]";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Kho của đại lý: [Xử lý]</h2>
+
+<div class="row">
+    <div class="col col-md-6">
+        <a href="#" class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-plus"></span> Nhập sách</a>
+        <a href="#" class="btn btn-success btn-sm"><span class="glyphicon glyphicon-shopping-cart"></span> Thêm Thanh toán</a>
+    </div>
+    <div class="col col-md-6">
+        <div class="form-group row">
+               <form method="post" id="filter-form">
+                   <div class="col col-md-6">
+                       <input type="hidden" name="agent_id" value="@ViewBag.agent_id"/>
+                       <input class="form-control text-box single-line" data-val="true" data-val-date="The field date must be a date." data-val-required="The date field is required." id="date" name="date" type="date" value="" required />
+                   </div>
+                   <div class="col col-md-2">
+                       <button type="submit" class="btn btn-sm btn-info"> <span class="glyphicon glyphicon-search"></span> Tra cứu</button>
+                   </div>
+               </form>
+                
+        </div>
+        
+    </div>
+</div>
+<table class="table table-bordered table-hover table-responsive">
+    <tr>
+        <th>
+            TÊN SÁCH
+        </th>
+        <th>
+            SỐ LƯỢNG 
+        </th>
+    </tr>
+    <tbody class="page">
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.book.name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.quantity)
+                </td>
+            </tr>
+        }
+    </tbody>
+
+</table>
+@section Scripts {
+    <script>
+        $("#filter-form").submit(function (e) {
+            var inp = $(this).serialize();
+            console.log(inp);
+            e.preventDefault();
+            $.post("@Url.Action("getB", "bill_out")", inp, function (a) {
+                var jsonB = a;
+                $.post("@Url.Action("getP","agent_payment")", inp, function (b) {
+                    var jsonP = b;
+                    $.each(jsonB, function (i, iB) {
+                        $.each(jsonP, function (j, iP) {
+                            if (iB.bookid == iP.bookid)
+                            {
+                                iB.qt = iB.qt - iP.qt;
+                                //console.log(iB.qt);
+                            }
+                        });
+                    });
+                    $(".page").empty();
+                    $.each(jsonB, function (i, item) {
+                        $(".page").prepend(`
+                        <tr>
+                              <td>`+item.bookname+`</td>
+                              <td>`+item.qt+`</td>
+                        </tr>
+                           `);
+                    });
+                });
+            });
+            
+        });
+    </script>
+}

@@ -1,0 +1,81 @@
+﻿@model IEnumerable<PhatHanhSach.Models.bill_in>
+
+@{
+    ViewBag.Title = "Phiếu nhập";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Phiếu nhập</h2>
+
+<p>
+    @Html.ActionLink("Thêm phiếu nhập mới", "Create",null,new {@class="btn btn-primary" })
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.total)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.date)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.rc)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.publisher.name)
+        </th>
+        <th>
+            <b>Thanh Toán</b>
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.total)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.date)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.rc)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.publisher.name)
+        </td>
+        <td>
+            @if (item.status == 0)
+            {
+                <span class="text-danger">Chưa thanh toán</span>
+            }
+            @if(item.status !=0)
+            {
+                <span class="text-success">Đã Thanh Toán</span>
+            }
+        </td>
+        <td>
+            @Html.ActionLink("Chi tiết", "Details", new { id=item.id },new { @class="btn btn-sm btn-info" }) 
+            @if(item.status==0)
+            {
+                <a class="btn btn-success paid" bid="@item.id" href="#">Đã thanh toán</a>
+            }
+
+        </td>
+    </tr>
+}
+
+</table>
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $(".paid").click(function () {
+                var bid = $(this).attr("bid");
+                $.post("@Url.Action("paid_update","bill_in")", { id: bid }, function () {
+                    alert("Đã thanh toán");
+                    window.location.href = "@Url.Action("Index","bill_in")";
+                });
+            });
+        });
+    </script>
+}

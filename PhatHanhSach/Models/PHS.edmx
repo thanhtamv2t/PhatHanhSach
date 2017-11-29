@@ -1,0 +1,964 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="PHSModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="agent">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="name" Type="nvarchar" MaxLength="50" />
+          <Property Name="addr" Type="nvarchar" MaxLength="150" />
+          <Property Name="phone" Type="nvarchar" MaxLength="11" />
+        </EntityType>
+        <EntityType Name="agent_payment">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="id_agent" Type="int" Nullable="false" />
+          <Property Name="amount" Type="float" Nullable="false" />
+          <Property Name="date" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="agent_payment_detail">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="id_payment" Type="int" Nullable="false" />
+          <Property Name="id_book" Type="int" Nullable="false" />
+          <Property Name="quantity" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="agent_storage">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="id_agent" Type="int" Nullable="false" />
+          <Property Name="id_book" Type="int" Nullable="false" />
+          <Property Name="quantity" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="bill_in">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="id_publisher" Type="int" Nullable="false" />
+          <Property Name="total" Type="float" Nullable="false" />
+          <Property Name="date" Type="datetime" Nullable="false" />
+          <Property Name="rc" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="status" Type="int" />
+        </EntityType>
+        <EntityType Name="bill_in_detail">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="id_bill_in" Type="int" />
+          <Property Name="id_book" Type="int" />
+          <Property Name="quantity" Type="int" />
+        </EntityType>
+        <EntityType Name="bill_out">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="id_agent" Type="int" Nullable="false" />
+          <Property Name="total" Type="float" />
+          <Property Name="date" Type="datetime" Nullable="false" />
+          <Property Name="rc" Type="nvarchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <EntityType Name="bill_out_detail">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="id_bill_out" Type="int" Nullable="false" />
+          <Property Name="id_book" Type="int" Nullable="false" />
+          <Property Name="quantity" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="book">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="name" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="id_cat" Type="int" Nullable="false" />
+          <Property Name="id_nxb" Type="int" Nullable="false" />
+          <Property Name="author" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="price" Type="float" Nullable="false" />
+          <Property Name="price_in" Type="float" Nullable="false" />
+          <Property Name="stock" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="cat">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="name" Type="nvarchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="publisher">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="name" Type="nvarchar" MaxLength="50" />
+          <Property Name="addr" Type="nvarchar" MaxLength="150" />
+          <Property Name="phone" Type="nvarchar" MaxLength="11" />
+          <Property Name="bank" Type="nvarchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="sysdiagrams">
+          <Key>
+            <PropertyRef Name="diagram_id" />
+          </Key>
+          <Property Name="name" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="principal_id" Type="int" Nullable="false" />
+          <Property Name="diagram_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="version" Type="int" />
+          <Property Name="definition" Type="varbinary(max)" />
+        </EntityType>
+        <Association Name="agent_relation">
+          <End Role="agent" Type="Self.agent" Multiplicity="1" />
+          <End Role="bill_out" Type="Self.bill_out" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="agent">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="bill_out">
+              <PropertyRef Name="id_agent" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="agent_relations">
+          <End Role="agent" Type="Self.agent" Multiplicity="1" />
+          <End Role="agent_payment" Type="Self.agent_payment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="agent">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="agent_payment">
+              <PropertyRef Name="id_agent" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="bdt_book">
+          <End Role="book" Type="Self.book" Multiplicity="0..1" />
+          <End Role="bill_in_detail" Type="Self.bill_in_detail" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="book">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="bill_in_detail">
+              <PropertyRef Name="id_book" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="bill_in_relation">
+          <End Role="bill_in" Type="Self.bill_in" Multiplicity="0..1" />
+          <End Role="bill_in_detail" Type="Self.bill_in_detail" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="bill_in">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="bill_in_detail">
+              <PropertyRef Name="id_bill_in" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="bill_out_relation">
+          <End Role="bill_out" Type="Self.bill_out" Multiplicity="1" />
+          <End Role="bill_out_detail" Type="Self.bill_out_detail" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="bill_out">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="bill_out_detail">
+              <PropertyRef Name="id_bill_out" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="book_relation">
+          <End Role="book" Type="Self.book" Multiplicity="1" />
+          <End Role="bill_out_detail" Type="Self.bill_out_detail" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="book">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="bill_out_detail">
+              <PropertyRef Name="id_book" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="Cat_relation">
+          <End Role="cat" Type="Self.cat" Multiplicity="1" />
+          <End Role="book" Type="Self.book" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="cat">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="book">
+              <PropertyRef Name="id_cat" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="id_publisher">
+          <End Role="publisher" Type="Self.publisher" Multiplicity="1" />
+          <End Role="bill_in" Type="Self.bill_in" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="publisher">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="bill_in">
+              <PropertyRef Name="id_publisher" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="payment_detail_books">
+          <End Role="book" Type="Self.book" Multiplicity="1" />
+          <End Role="agent_payment_detail" Type="Self.agent_payment_detail" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="book">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="agent_payment_detail">
+              <PropertyRef Name="id_book" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="payment_detail_payid">
+          <End Role="agent_payment" Type="Self.agent_payment" Multiplicity="1" />
+          <End Role="agent_payment_detail" Type="Self.agent_payment_detail" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="agent_payment">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="agent_payment_detail">
+              <PropertyRef Name="id_payment" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="Pub_relation">
+          <End Role="publisher" Type="Self.publisher" Multiplicity="1" />
+          <End Role="book" Type="Self.book" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="publisher">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="book">
+              <PropertyRef Name="id_nxb" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="storeagent">
+          <End Role="agent" Type="Self.agent" Multiplicity="1" />
+          <End Role="agent_storage" Type="Self.agent_storage" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="agent">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="agent_storage">
+              <PropertyRef Name="id_agent" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="storebook">
+          <End Role="book" Type="Self.book" Multiplicity="1" />
+          <End Role="agent_storage" Type="Self.agent_storage" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="book">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="agent_storage">
+              <PropertyRef Name="id_book" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Function Name="fn_diagramobjects" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="true" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" ReturnType="int" />
+        <Function Name="sp_alterdiagram" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="diagramname" Type="nvarchar" Mode="In" />
+          <Parameter Name="owner_id" Type="int" Mode="In" />
+          <Parameter Name="version" Type="int" Mode="In" />
+          <Parameter Name="definition" Type="varbinary(max)" Mode="In" />
+        </Function>
+        <Function Name="sp_creatediagram" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="diagramname" Type="nvarchar" Mode="In" />
+          <Parameter Name="owner_id" Type="int" Mode="In" />
+          <Parameter Name="version" Type="int" Mode="In" />
+          <Parameter Name="definition" Type="varbinary(max)" Mode="In" />
+        </Function>
+        <Function Name="sp_dropdiagram" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="diagramname" Type="nvarchar" Mode="In" />
+          <Parameter Name="owner_id" Type="int" Mode="In" />
+        </Function>
+        <Function Name="sp_helpdiagramdefinition" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="diagramname" Type="nvarchar" Mode="In" />
+          <Parameter Name="owner_id" Type="int" Mode="In" />
+        </Function>
+        <Function Name="sp_helpdiagrams" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="diagramname" Type="nvarchar" Mode="In" />
+          <Parameter Name="owner_id" Type="int" Mode="In" />
+        </Function>
+        <Function Name="sp_renamediagram" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="diagramname" Type="nvarchar" Mode="In" />
+          <Parameter Name="owner_id" Type="int" Mode="In" />
+          <Parameter Name="new_diagramname" Type="nvarchar" Mode="In" />
+        </Function>
+        <Function Name="sp_upgraddiagrams" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <EntityContainer Name="PHSModelStoreContainer">
+          <EntitySet Name="agent" EntityType="Self.agent" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="agent_payment" EntityType="Self.agent_payment" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="agent_payment_detail" EntityType="Self.agent_payment_detail" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="agent_storage" EntityType="Self.agent_storage" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="bill_in" EntityType="Self.bill_in" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="bill_in_detail" EntityType="Self.bill_in_detail" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="bill_out" EntityType="Self.bill_out" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="bill_out_detail" EntityType="Self.bill_out_detail" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="book" EntityType="Self.book" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="cat" EntityType="Self.cat" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="publisher" EntityType="Self.publisher" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagrams" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="agent_relation" Association="Self.agent_relation">
+            <End Role="agent" EntitySet="agent" />
+            <End Role="bill_out" EntitySet="bill_out" />
+          </AssociationSet>
+          <AssociationSet Name="agent_relations" Association="Self.agent_relations">
+            <End Role="agent" EntitySet="agent" />
+            <End Role="agent_payment" EntitySet="agent_payment" />
+          </AssociationSet>
+          <AssociationSet Name="bdt_book" Association="Self.bdt_book">
+            <End Role="book" EntitySet="book" />
+            <End Role="bill_in_detail" EntitySet="bill_in_detail" />
+          </AssociationSet>
+          <AssociationSet Name="bill_in_relation" Association="Self.bill_in_relation">
+            <End Role="bill_in" EntitySet="bill_in" />
+            <End Role="bill_in_detail" EntitySet="bill_in_detail" />
+          </AssociationSet>
+          <AssociationSet Name="bill_out_relation" Association="Self.bill_out_relation">
+            <End Role="bill_out" EntitySet="bill_out" />
+            <End Role="bill_out_detail" EntitySet="bill_out_detail" />
+          </AssociationSet>
+          <AssociationSet Name="book_relation" Association="Self.book_relation">
+            <End Role="book" EntitySet="book" />
+            <End Role="bill_out_detail" EntitySet="bill_out_detail" />
+          </AssociationSet>
+          <AssociationSet Name="Cat_relation" Association="Self.Cat_relation">
+            <End Role="cat" EntitySet="cat" />
+            <End Role="book" EntitySet="book" />
+          </AssociationSet>
+          <AssociationSet Name="id_publisher" Association="Self.id_publisher">
+            <End Role="publisher" EntitySet="publisher" />
+            <End Role="bill_in" EntitySet="bill_in" />
+          </AssociationSet>
+          <AssociationSet Name="payment_detail_books" Association="Self.payment_detail_books">
+            <End Role="book" EntitySet="book" />
+            <End Role="agent_payment_detail" EntitySet="agent_payment_detail" />
+          </AssociationSet>
+          <AssociationSet Name="payment_detail_payid" Association="Self.payment_detail_payid">
+            <End Role="agent_payment" EntitySet="agent_payment" />
+            <End Role="agent_payment_detail" EntitySet="agent_payment_detail" />
+          </AssociationSet>
+          <AssociationSet Name="Pub_relation" Association="Self.Pub_relation">
+            <End Role="publisher" EntitySet="publisher" />
+            <End Role="book" EntitySet="book" />
+          </AssociationSet>
+          <AssociationSet Name="storeagent" Association="Self.storeagent">
+            <End Role="agent" EntitySet="agent" />
+            <End Role="agent_storage" EntitySet="agent_storage" />
+          </AssociationSet>
+          <AssociationSet Name="storebook" Association="Self.storebook">
+            <End Role="book" EntitySet="book" />
+            <End Role="agent_storage" EntitySet="agent_storage" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="PHSModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="agent">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="addr" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="phone" Type="String" MaxLength="11" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="bill_out" Relationship="Self.agent_relation" FromRole="agent" ToRole="bill_out" />
+          <NavigationProperty Name="agent_payment" Relationship="Self.agent_relations" FromRole="agent" ToRole="agent_payment" />
+          <NavigationProperty Name="agent_storage" Relationship="Self.storeagent" FromRole="agent" ToRole="agent_storage" />
+        </EntityType>
+        <EntityType Name="agent_payment">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="id_agent" Type="Int32" Nullable="false" />
+          <Property Name="amount" Type="Double" Nullable="false" />
+          <Property Name="date" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="agent" Relationship="Self.agent_relations" FromRole="agent_payment" ToRole="agent" />
+          <NavigationProperty Name="agent_payment_detail" Relationship="Self.payment_detail_payid" FromRole="agent_payment" ToRole="agent_payment_detail" />
+        </EntityType>
+        <EntityType Name="agent_payment_detail">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="id_payment" Type="Int32" Nullable="false" />
+          <Property Name="id_book" Type="Int32" Nullable="false" />
+          <Property Name="quantity" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="agent_payment" Relationship="Self.payment_detail_payid" FromRole="agent_payment_detail" ToRole="agent_payment" />
+          <NavigationProperty Name="book" Relationship="Self.payment_detail_books" FromRole="agent_payment_detail" ToRole="book" />
+        </EntityType>
+        <EntityType Name="agent_storage">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="id_agent" Type="Int32" Nullable="false" />
+          <Property Name="id_book" Type="Int32" Nullable="false" />
+          <Property Name="quantity" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="agent" Relationship="Self.storeagent" FromRole="agent_storage" ToRole="agent" />
+          <NavigationProperty Name="book" Relationship="Self.storebook" FromRole="agent_storage" ToRole="book" />
+        </EntityType>
+        <EntityType Name="bill_in">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="id_publisher" Type="Int32" Nullable="false" />
+          <Property Name="total" Type="Double" Nullable="false" />
+          <Property Name="date" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="rc" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="bill_in_detail" Relationship="Self.bill_in_relation" FromRole="bill_in" ToRole="bill_in_detail" />
+          <NavigationProperty Name="publisher" Relationship="Self.id_publisher" FromRole="bill_in" ToRole="publisher" />
+          <Property Name="status" Type="Int32" />
+        </EntityType>
+        <EntityType Name="bill_in_detail">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="id_bill_in" Type="Int32" />
+          <Property Name="id_book" Type="Int32" />
+          <Property Name="quantity" Type="Int32" />
+          <NavigationProperty Name="bill_in" Relationship="Self.bill_in_relation" FromRole="bill_in_detail" ToRole="bill_in" />
+          <NavigationProperty Name="book" Relationship="Self.bdt_book" FromRole="bill_in_detail" ToRole="book" />
+        </EntityType>
+        <EntityType Name="bill_out">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="id_agent" Type="Int32" Nullable="false" />
+          <Property Name="total" Type="Double" />
+          <Property Name="date" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="rc" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="agent" Relationship="Self.agent_relation" FromRole="bill_out" ToRole="agent" />
+          <NavigationProperty Name="bill_out_detail" Relationship="Self.bill_out_relation" FromRole="bill_out" ToRole="bill_out_detail" />
+        </EntityType>
+        <EntityType Name="bill_out_detail">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="id_bill_out" Type="Int32" Nullable="false" />
+          <Property Name="id_book" Type="Int32" Nullable="false" />
+          <Property Name="quantity" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="bill_out" Relationship="Self.bill_out_relation" FromRole="bill_out_detail" ToRole="bill_out" />
+          <NavigationProperty Name="book" Relationship="Self.book_relation" FromRole="bill_out_detail" ToRole="book" />
+        </EntityType>
+        <EntityType Name="book">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="id_cat" Type="Int32" Nullable="false" />
+          <Property Name="id_nxb" Type="Int32" Nullable="false" />
+          <Property Name="author" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="price" Type="Double" Nullable="false" />
+          <Property Name="price_in" Type="Double" Nullable="false" />
+          <Property Name="stock" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="agent_payment_detail" Relationship="Self.payment_detail_books" FromRole="book" ToRole="agent_payment_detail" />
+          <NavigationProperty Name="agent_storage" Relationship="Self.storebook" FromRole="book" ToRole="agent_storage" />
+          <NavigationProperty Name="bill_in_detail" Relationship="Self.bdt_book" FromRole="book" ToRole="bill_in_detail" />
+          <NavigationProperty Name="bill_out_detail" Relationship="Self.book_relation" FromRole="book" ToRole="bill_out_detail" />
+          <NavigationProperty Name="cat" Relationship="Self.Cat_relation" FromRole="book" ToRole="cat" />
+          <NavigationProperty Name="publisher" Relationship="Self.Pub_relation" FromRole="book" ToRole="publisher" />
+        </EntityType>
+        <EntityType Name="cat">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="books" Relationship="Self.Cat_relation" FromRole="cat" ToRole="book" />
+        </EntityType>
+        <EntityType Name="publisher">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="addr" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="phone" Type="String" MaxLength="11" FixedLength="false" Unicode="true" />
+          <Property Name="bank" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="bill_in" Relationship="Self.id_publisher" FromRole="publisher" ToRole="bill_in" />
+          <NavigationProperty Name="books" Relationship="Self.Pub_relation" FromRole="publisher" ToRole="book" />
+        </EntityType>
+        <EntityType Name="sysdiagram">
+          <Key>
+            <PropertyRef Name="diagram_id" />
+          </Key>
+          <Property Name="name" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="principal_id" Type="Int32" Nullable="false" />
+          <Property Name="diagram_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="version" Type="Int32" />
+          <Property Name="definition" Type="Binary" MaxLength="Max" FixedLength="false" />
+        </EntityType>
+        <Association Name="agent_relation">
+          <End Role="agent" Type="Self.agent" Multiplicity="1" />
+          <End Role="bill_out" Type="Self.bill_out" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="agent">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="bill_out">
+              <PropertyRef Name="id_agent" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="agent_relations">
+          <End Role="agent" Type="Self.agent" Multiplicity="1" />
+          <End Role="agent_payment" Type="Self.agent_payment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="agent">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="agent_payment">
+              <PropertyRef Name="id_agent" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="storeagent">
+          <End Role="agent" Type="Self.agent" Multiplicity="1" />
+          <End Role="agent_storage" Type="Self.agent_storage" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="agent">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="agent_storage">
+              <PropertyRef Name="id_agent" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="payment_detail_payid">
+          <End Role="agent_payment" Type="Self.agent_payment" Multiplicity="1" />
+          <End Role="agent_payment_detail" Type="Self.agent_payment_detail" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="agent_payment">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="agent_payment_detail">
+              <PropertyRef Name="id_payment" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="payment_detail_books">
+          <End Role="book" Type="Self.book" Multiplicity="1" />
+          <End Role="agent_payment_detail" Type="Self.agent_payment_detail" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="book">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="agent_payment_detail">
+              <PropertyRef Name="id_book" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="storebook">
+          <End Role="book" Type="Self.book" Multiplicity="1" />
+          <End Role="agent_storage" Type="Self.agent_storage" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="book">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="agent_storage">
+              <PropertyRef Name="id_book" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="bill_in_relation">
+          <End Role="bill_in" Type="Self.bill_in" Multiplicity="0..1" />
+          <End Role="bill_in_detail" Type="Self.bill_in_detail" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="bill_in">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="bill_in_detail">
+              <PropertyRef Name="id_bill_in" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="id_publisher">
+          <End Role="publisher" Type="Self.publisher" Multiplicity="1" />
+          <End Role="bill_in" Type="Self.bill_in" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="publisher">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="bill_in">
+              <PropertyRef Name="id_publisher" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="bdt_book">
+          <End Role="book" Type="Self.book" Multiplicity="0..1" />
+          <End Role="bill_in_detail" Type="Self.bill_in_detail" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="book">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="bill_in_detail">
+              <PropertyRef Name="id_book" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="bill_out_relation">
+          <End Role="bill_out" Type="Self.bill_out" Multiplicity="1" />
+          <End Role="bill_out_detail" Type="Self.bill_out_detail" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="bill_out">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="bill_out_detail">
+              <PropertyRef Name="id_bill_out" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="book_relation">
+          <End Role="book" Type="Self.book" Multiplicity="1" />
+          <End Role="bill_out_detail" Type="Self.bill_out_detail" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="book">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="bill_out_detail">
+              <PropertyRef Name="id_book" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="Cat_relation">
+          <End Role="cat" Type="Self.cat" Multiplicity="1" />
+          <End Role="book" Type="Self.book" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="cat">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="book">
+              <PropertyRef Name="id_cat" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="Pub_relation">
+          <End Role="publisher" Type="Self.publisher" Multiplicity="1" />
+          <End Role="book" Type="Self.book" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="publisher">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="book">
+              <PropertyRef Name="id_nxb" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="PHSEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="agents" EntityType="Self.agent" />
+          <EntitySet Name="agent_payment" EntityType="Self.agent_payment" />
+          <EntitySet Name="agent_payment_detail" EntityType="Self.agent_payment_detail" />
+          <EntitySet Name="agent_storage" EntityType="Self.agent_storage" />
+          <EntitySet Name="bill_in" EntityType="Self.bill_in" />
+          <EntitySet Name="bill_in_detail" EntityType="Self.bill_in_detail" />
+          <EntitySet Name="bill_out" EntityType="Self.bill_out" />
+          <EntitySet Name="bill_out_detail" EntityType="Self.bill_out_detail" />
+          <EntitySet Name="books" EntityType="Self.book" />
+          <EntitySet Name="cats" EntityType="Self.cat" />
+          <EntitySet Name="publishers" EntityType="Self.publisher" />
+          <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagram" />
+          <AssociationSet Name="agent_relation" Association="Self.agent_relation">
+            <End Role="agent" EntitySet="agents" />
+            <End Role="bill_out" EntitySet="bill_out" />
+          </AssociationSet>
+          <AssociationSet Name="agent_relations" Association="Self.agent_relations">
+            <End Role="agent" EntitySet="agents" />
+            <End Role="agent_payment" EntitySet="agent_payment" />
+          </AssociationSet>
+          <AssociationSet Name="storeagent" Association="Self.storeagent">
+            <End Role="agent" EntitySet="agents" />
+            <End Role="agent_storage" EntitySet="agent_storage" />
+          </AssociationSet>
+          <AssociationSet Name="payment_detail_payid" Association="Self.payment_detail_payid">
+            <End Role="agent_payment" EntitySet="agent_payment" />
+            <End Role="agent_payment_detail" EntitySet="agent_payment_detail" />
+          </AssociationSet>
+          <AssociationSet Name="payment_detail_books" Association="Self.payment_detail_books">
+            <End Role="book" EntitySet="books" />
+            <End Role="agent_payment_detail" EntitySet="agent_payment_detail" />
+          </AssociationSet>
+          <AssociationSet Name="storebook" Association="Self.storebook">
+            <End Role="book" EntitySet="books" />
+            <End Role="agent_storage" EntitySet="agent_storage" />
+          </AssociationSet>
+          <AssociationSet Name="bill_in_relation" Association="Self.bill_in_relation">
+            <End Role="bill_in" EntitySet="bill_in" />
+            <End Role="bill_in_detail" EntitySet="bill_in_detail" />
+          </AssociationSet>
+          <AssociationSet Name="id_publisher" Association="Self.id_publisher">
+            <End Role="publisher" EntitySet="publishers" />
+            <End Role="bill_in" EntitySet="bill_in" />
+          </AssociationSet>
+          <AssociationSet Name="bdt_book" Association="Self.bdt_book">
+            <End Role="book" EntitySet="books" />
+            <End Role="bill_in_detail" EntitySet="bill_in_detail" />
+          </AssociationSet>
+          <AssociationSet Name="bill_out_relation" Association="Self.bill_out_relation">
+            <End Role="bill_out" EntitySet="bill_out" />
+            <End Role="bill_out_detail" EntitySet="bill_out_detail" />
+          </AssociationSet>
+          <AssociationSet Name="book_relation" Association="Self.book_relation">
+            <End Role="book" EntitySet="books" />
+            <End Role="bill_out_detail" EntitySet="bill_out_detail" />
+          </AssociationSet>
+          <AssociationSet Name="Cat_relation" Association="Self.Cat_relation">
+            <End Role="cat" EntitySet="cats" />
+            <End Role="book" EntitySet="books" />
+          </AssociationSet>
+          <AssociationSet Name="Pub_relation" Association="Self.Pub_relation">
+            <End Role="publisher" EntitySet="publishers" />
+            <End Role="book" EntitySet="books" />
+          </AssociationSet>
+          <FunctionImport Name="sp_alterdiagram">
+            <Parameter Name="diagramname" Mode="In" Type="String" />
+            <Parameter Name="owner_id" Mode="In" Type="Int32" />
+            <Parameter Name="version" Mode="In" Type="Int32" />
+            <Parameter Name="definition" Mode="In" Type="Binary" />
+          </FunctionImport>
+          <FunctionImport Name="sp_creatediagram">
+            <Parameter Name="diagramname" Mode="In" Type="String" />
+            <Parameter Name="owner_id" Mode="In" Type="Int32" />
+            <Parameter Name="version" Mode="In" Type="Int32" />
+            <Parameter Name="definition" Mode="In" Type="Binary" />
+          </FunctionImport>
+          <FunctionImport Name="sp_dropdiagram">
+            <Parameter Name="diagramname" Mode="In" Type="String" />
+            <Parameter Name="owner_id" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="sp_helpdiagramdefinition" ReturnType="Collection(PHSModel.sp_helpdiagramdefinition_Result)">
+            <Parameter Name="diagramname" Mode="In" Type="String" />
+            <Parameter Name="owner_id" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="sp_helpdiagrams" ReturnType="Collection(PHSModel.sp_helpdiagrams_Result)">
+            <Parameter Name="diagramname" Mode="In" Type="String" />
+            <Parameter Name="owner_id" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="sp_renamediagram">
+            <Parameter Name="diagramname" Mode="In" Type="String" />
+            <Parameter Name="owner_id" Mode="In" Type="Int32" />
+            <Parameter Name="new_diagramname" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="sp_upgraddiagrams" />
+        </EntityContainer>
+        <ComplexType Name="sp_helpdiagramdefinition_Result">
+          <Property Type="Int32" Name="version" Nullable="true" />
+          <Property Type="Binary" Name="definition" Nullable="true" />
+        </ComplexType>
+        <ComplexType Name="sp_helpdiagrams_Result">
+          <Property Type="String" Name="Database" Nullable="true" MaxLength="128" />
+          <Property Type="String" Name="Name" Nullable="false" MaxLength="128" />
+          <Property Type="Int32" Name="ID" Nullable="false" />
+          <Property Type="String" Name="Owner" Nullable="true" MaxLength="128" />
+          <Property Type="Int32" Name="OwnerID" Nullable="false" />
+        </ComplexType>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="PHSModelStoreContainer" CdmEntityContainer="PHSEntities">
+          <EntitySetMapping Name="agents">
+            <EntityTypeMapping TypeName="PHSModel.agent">
+              <MappingFragment StoreEntitySet="agent">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="name" ColumnName="name" />
+                <ScalarProperty Name="addr" ColumnName="addr" />
+                <ScalarProperty Name="phone" ColumnName="phone" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="agent_payment">
+            <EntityTypeMapping TypeName="PHSModel.agent_payment">
+              <MappingFragment StoreEntitySet="agent_payment">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="id_agent" ColumnName="id_agent" />
+                <ScalarProperty Name="amount" ColumnName="amount" />
+                <ScalarProperty Name="date" ColumnName="date" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="agent_payment_detail">
+            <EntityTypeMapping TypeName="PHSModel.agent_payment_detail">
+              <MappingFragment StoreEntitySet="agent_payment_detail">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="id_payment" ColumnName="id_payment" />
+                <ScalarProperty Name="id_book" ColumnName="id_book" />
+                <ScalarProperty Name="quantity" ColumnName="quantity" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="agent_storage">
+            <EntityTypeMapping TypeName="PHSModel.agent_storage">
+              <MappingFragment StoreEntitySet="agent_storage">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="id_agent" ColumnName="id_agent" />
+                <ScalarProperty Name="id_book" ColumnName="id_book" />
+                <ScalarProperty Name="quantity" ColumnName="quantity" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="bill_in">
+            <EntityTypeMapping TypeName="PHSModel.bill_in">
+              <MappingFragment StoreEntitySet="bill_in">
+                <ScalarProperty Name="status" ColumnName="status" />
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="id_publisher" ColumnName="id_publisher" />
+                <ScalarProperty Name="total" ColumnName="total" />
+                <ScalarProperty Name="date" ColumnName="date" />
+                <ScalarProperty Name="rc" ColumnName="rc" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="bill_in_detail">
+            <EntityTypeMapping TypeName="PHSModel.bill_in_detail">
+              <MappingFragment StoreEntitySet="bill_in_detail">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="id_bill_in" ColumnName="id_bill_in" />
+                <ScalarProperty Name="id_book" ColumnName="id_book" />
+                <ScalarProperty Name="quantity" ColumnName="quantity" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="bill_out">
+            <EntityTypeMapping TypeName="PHSModel.bill_out">
+              <MappingFragment StoreEntitySet="bill_out">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="id_agent" ColumnName="id_agent" />
+                <ScalarProperty Name="total" ColumnName="total" />
+                <ScalarProperty Name="date" ColumnName="date" />
+                <ScalarProperty Name="rc" ColumnName="rc" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="bill_out_detail">
+            <EntityTypeMapping TypeName="PHSModel.bill_out_detail">
+              <MappingFragment StoreEntitySet="bill_out_detail">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="id_bill_out" ColumnName="id_bill_out" />
+                <ScalarProperty Name="id_book" ColumnName="id_book" />
+                <ScalarProperty Name="quantity" ColumnName="quantity" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="books">
+            <EntityTypeMapping TypeName="PHSModel.book">
+              <MappingFragment StoreEntitySet="book">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="name" ColumnName="name" />
+                <ScalarProperty Name="id_cat" ColumnName="id_cat" />
+                <ScalarProperty Name="id_nxb" ColumnName="id_nxb" />
+                <ScalarProperty Name="author" ColumnName="author" />
+                <ScalarProperty Name="price" ColumnName="price" />
+                <ScalarProperty Name="price_in" ColumnName="price_in" />
+                <ScalarProperty Name="stock" ColumnName="stock" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="cats">
+            <EntityTypeMapping TypeName="PHSModel.cat">
+              <MappingFragment StoreEntitySet="cat">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="name" ColumnName="name" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="publishers">
+            <EntityTypeMapping TypeName="PHSModel.publisher">
+              <MappingFragment StoreEntitySet="publisher">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="name" ColumnName="name" />
+                <ScalarProperty Name="addr" ColumnName="addr" />
+                <ScalarProperty Name="phone" ColumnName="phone" />
+                <ScalarProperty Name="bank" ColumnName="bank" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="sysdiagrams">
+            <EntityTypeMapping TypeName="PHSModel.sysdiagram">
+              <MappingFragment StoreEntitySet="sysdiagrams">
+                <ScalarProperty Name="name" ColumnName="name" />
+                <ScalarProperty Name="principal_id" ColumnName="principal_id" />
+                <ScalarProperty Name="diagram_id" ColumnName="diagram_id" />
+                <ScalarProperty Name="version" ColumnName="version" />
+                <ScalarProperty Name="definition" ColumnName="definition" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="sp_alterdiagram" FunctionName="PHSModel.Store.sp_alterdiagram" />
+          <FunctionImportMapping FunctionImportName="sp_creatediagram" FunctionName="PHSModel.Store.sp_creatediagram" />
+          <FunctionImportMapping FunctionImportName="sp_dropdiagram" FunctionName="PHSModel.Store.sp_dropdiagram" />
+          <FunctionImportMapping FunctionImportName="sp_helpdiagramdefinition" FunctionName="PHSModel.Store.sp_helpdiagramdefinition">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="PHSModel.sp_helpdiagramdefinition_Result">
+                <ScalarProperty Name="version" ColumnName="version" />
+                <ScalarProperty Name="definition" ColumnName="definition" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="sp_helpdiagrams" FunctionName="PHSModel.Store.sp_helpdiagrams">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="PHSModel.sp_helpdiagrams_Result">
+                <ScalarProperty Name="Database" ColumnName="Database" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="Owner" ColumnName="Owner" />
+                <ScalarProperty Name="OwnerID" ColumnName="OwnerID" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="sp_renamediagram" FunctionName="PHSModel.Store.sp_renamediagram" />
+          <FunctionImportMapping FunctionImportName="sp_upgraddiagrams" FunctionName="PHSModel.Store.sp_upgraddiagrams" />
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

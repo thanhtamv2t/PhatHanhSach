@@ -1,0 +1,238 @@
+﻿@model PhatHanhSach.Models.agent_payment
+
+@{
+    ViewBag.Title = "Create";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Create</h2>
+<div class="container">
+    <div class="row">
+        <div class="col col-md-6">
+@using (Html.BeginForm("Create","agent_payment", FormMethod.Post, new { @class = "form-payment" }))
+{
+
+                <div class="form-horizontal">
+        <h4>agent_payment</h4>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group">
+            @Html.LabelFor(model => model.id_agent, "id_agent", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownList("id_agent", null, htmlAttributes: new { @class = "form-control", @id="agent_list" })
+                @Html.ValidationMessageFor(model => model.id_agent, "", new { @class = "text-danger" })
+                <input type="hidden" name="agent_id" value="" />
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.amount, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.amount, new { htmlAttributes = new { @class = "form-control", @readonly="readonly", @id="totalinp" } })
+                @Html.ValidationMessageFor(model => model.amount, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.date, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.date, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.date, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Ghi nhận Thanh Toán" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+}
+        </div>
+        <div class="col-md-6">
+            <form class="bill-out-detail-form" method="post" action="#">
+                <div class="form-group">
+                    <div class="col-md-5">
+                        @Html.DropDownList("id_book", null, htmlAttributes: new { @class = "form-control", @id = "book_item" })
+                    </div>
+                    <div class="col-md-4">
+                        <input type="number" min="0" step="1" name="quant" id="quant" value="" class="form-control" placeholder="Số lượng" required />
+                    </div>
+                    <div class="col-md-3">
+                        <button class="btn btn-primary" type="submit" id="addBook">Thêm</button>
+                    </div>
+                </div>
+            </form>
+            <hr />
+            <div class="clearfix"></div>
+            <table class="table table-striped" style="margin-top:24px;">
+                <thead>
+                    <tr>
+                        <td>Tên sách</td>
+                        <td>Số lượng</td>
+                        <td>Thành giá</td>
+                        <td>Action</td>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="2">Tổng cộng</td>
+                        <td colspan="2" id="totalPrice"></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Thông báo: </h4>
+            </div>
+            <div class="modal-body">
+                <p class="text-danger text-center message"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Đóng lại</button>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script>
+        $(document).ready(function () {
+            var total = 0;
+            $("#totalPrice").html(total);
+            $("#totalinp").val(total);
+
+            $(".bill-out-detail-form").submit(function (e) {
+
+                e.preventDefault();
+                var agent_id = $("#agent_list").val();
+                var a = $("#book_item").val();
+                $("#agent_list").attr("disabled", "disabled");
+                //getPrice
+                $.post("@Url.Action("getPriceOut","books")", { id_book: a}, function (data) {
+                    //console.log(data);
+                    var quantity = $("#quant").val();
+                    var money = quantity * data.price;
+                    var dstring = "agent_id="+agent_id+"&book_id="+a;
+                    $.post("@Url.Action("getStore","agent_storage")", dstring, function (c) {
+                        console.log(quantity +" > "+c+": "+ Number(quantity)>Number(c));
+                        
+                        if (Number(quantity) > Number(c)) {
+                            $(".message").html("Số lượng trong kho không đủ!");
+                            $('#myModal').modal();
+                        } else
+                        {
+                            //Check if exists
+                            var f = 0;
+                            $("tr.item").each(function () {
+                                $this = $(this);
+                                var name = $this.find("td.name").html();
+                                if (name == $("#book_item option:selected").text()) {
+                                    //Check quantity
+                                    var stock = Number(c) - Number($this.find("td.quantity").html());
+                                    console.log(stock);
+                                    if (Number(quantity) > Number(stock)) {
+                                        $(".message").html("Số lượng trong kho không đủ!");
+                                        $('#myModal').modal();
+                                        f = 1;
+                                    } else {
+                                        var newqt = (Number(quantity) + Number($this.find("td.quantity").html()));
+                                        var newmoney = newqt * data.price;
+                                        $this.find("td.quantity").html(newqt);
+                                        $this.find("td.money").html(newmoney);
+                                        f = 1;
+                                        total = total + data.price * $("#quant").val();
+                                    }
+                                }
+
+                            });
+                            if (f == 0) {
+                                $(".table tbody").append(`
+                                <tr class="item">
+                                      <td class="id" style="display:none">`+ $("#book_item option:selected").val() + `</td>
+                                      <td class="name">`+ $("#book_item option:selected").text() + `</td>
+                                      <td class="quantity">`+ quantity + `</td>
+                                      <td class="money">`+ money + `</td>
+                                      <td><button class="btn-delete btn btn-sm btn-danger">Xóa</button></td>
+
+                                </tr>
+                            `);
+                                total = total + data.price * $("#quant").val();
+                            }
+
+                            $("#totalPrice").html(total);
+                            $("#totalinp").val(total);
+                        }
+                    });
+
+
+                })
+            });
+            $("body").on("click", "button.btn-delete", function () {
+                var money = $(this).parents("tr.item").find("td.money").html();
+                total = total - money;
+                $("#totalPrice").html(total);
+                $("#totalinp").val(total);
+                $(this).parents("tr.item").remove();
+
+            });
+
+            $(".form-payment").submit(function (e) {
+                e.preventDefault();
+                $("#agent_list").removeAttr("disabled");
+                if (total == 0)
+                {
+                    $(".message").html("Vui lòng điền đầy đủ thông tin!");
+                    $('#myModal').modal();
+                } else
+                {
+                    var forminp = $(".form-payment").serialize();
+                    var agent_id = $("#agent_list").val();
+                    console.log(forminp);
+                     //Add Payment
+                            $.post("@Url.Action("Create","agent_payment")", forminp, function (c) {
+                                if (c.con == "error")
+                                {
+                                    $(".message").html("Xảy ra lỗi vui lòng thử lại!");
+                                    $('#myModal').modal();
+                                }
+                                else {
+                            //Storage Update (Substract)
+                                    $("tr.item").each(function () {
+                                        $this = $(this);
+                                        var book_id = $this.find("td.id").html();
+                                        var name = $this.find("td.name").html();
+                                        var qt = $this.find("td.quantity").html();
+
+                                        var dstring = "agent_id=" + agent_id + "&id_book=" + book_id + "&quantity=" + qt + "&id_payment=" + c.inserted;
+                                        console.log(dstring);
+                                        $.post("@Url.Action("subStore","agent_storage")", dstring, function (a) {
+                                            if (a != 1)
+                                            {
+                                                console.log("error");
+                                                console.log(a);
+                                            }
+                                        });
+                                        $.post("@Url.Action("Create","agent_payment_detail")",dstring,function (b) { });
+                                    });
+                                    window.location.href = "@Url.Action("Index","agent_payment")";
+                                }
+                            });
+                }
+            });
+        });
+    </script>
+}
